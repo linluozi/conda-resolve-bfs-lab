@@ -1,0 +1,49 @@
+diff --git a/conda/resolve.py b/conda/resolve.py
+index 97260f7..f3b4f81 100644
+--- a/conda/resolve.py
++++ b/conda/resolve.py
+@@ -435,22 +435,21 @@ class Resolve:
+         raise UnsatisfiableError(bad_deps, strict=strict_channel_priority)
+ 
+     def breadth_first_search_for_dep_graph(
+         self, root_spec, target_name, dep_graph, num_targets=1
+     ):
+         """Return shorted path from root_spec to target_name"""
+-        queue = []
+-        queue.append([root_spec])
+-        visited = []
++        queue = deque([[root_spec]])
++        visited = set()
+         target_paths = []
+         while queue:
+-            path = queue.pop(0)
++            path = queue.popleft()
+             node = path[-1]
+             if node in visited:
+                 continue
+-            visited.append(node)
++            visited.add(node)
+             if node.name == target_name:
+                 if len(target_paths) == 0:
+                     target_paths.append(path)
+                 if len(target_paths[-1]) == len(path):
+                     last_spec = MatchSpec.union((path[-1], target_paths[-1][-1]))[0]
+                     target_paths[-1][-1] = last_spec
+@@ -462,16 +461,13 @@ class Resolve:
+                 )
+                 if len(queue) == 0 or found_all_targets:
+                     return target_paths
+             sub_graph = dep_graph
+             for p in path[0:-1]:
+                 sub_graph = sub_graph[p]
+-            children = [_ for _ in sub_graph.get(node, {})]
+-            if children is None:
+-                continue
+-            for adj in children:
++            for adj in sub_graph.get(node) or ():
+                 if len(target_paths) < num_targets:
+                     new_path = list(path)
+                     new_path.append(adj)
+                     queue.append(new_path)
+         return target_paths
+ 

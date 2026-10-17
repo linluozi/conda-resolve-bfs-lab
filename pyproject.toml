@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "conda-resolve-bfs-lab"
+version = "1.0.0"
+description = "Arm-by-arm measurement of a three-part optimisation to conda's Resolve.breadth_first_search_for_dep_graph"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "optdelta" }]
+keywords = [
+    "conda",
+    "bfs",
+    "breadth-first-search",
+    "optimization",
+    "benchmark",
+    "ablation",
+]
+
+# The benchmark, tests and figure generation use only the standard library.
+# matplotlib is optional and only needed by benchmarks/make_figures.py.
+dependencies = []
+
+[project.optional-dependencies]
+figures = ["matplotlib>=3.7"]
+
+[tool.setuptools]
+packages = ["src"]
